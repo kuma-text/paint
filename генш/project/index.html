@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>мой проект геншин импакт</title>
+    <meta name="google-site-verification" content="g5Oy7inpAbGEGYZWN2ARMfC4pNyS5ogWtGTF6vlIDKc" />
+    <style>
+        /* === ОБЩИЕ СТИЛИ И ГЛАВНАЯ СТРАНИЦА (style.css) === */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #190427;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        img {
+            max-width: 100%;
+        }
+        .header {
+            padding: 25px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #190427;
+            transition: all 0.3s ease;
+        }
+        .header--shrink {
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 20px rgba(0,0,0,.08);
+            padding: 15px 0;
+        }
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .div1 {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .div1 a.active-nav {
+            text-decoration: underline;
+            color: #ffd166;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 165px;
+            height: 50px;
+            font-weight: 500;
+            font-size: 16px;
+            background: blueviolet;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .welcome {
+            background-image: url("5d78da61-6c07-4088-babc-a00f9ca4f2b2.webp");
+            background-size: cover;
+            background-position: center;
+            padding: 300px 0;
+            margin-top: -120px;
+        }
+        .welcome_dasc {
+            margin: 40px 0;
+            font-size: 18px;
+        }
+        .welcome_title {
+            font-size: 58px;
+        }
+        .food-list {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+            justify-content: center;
+        }
+        .food-list_card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: 250px;
+        }
+        .slider {
+            position: relative;
+            max-width: 800px;
+            margin: 50px auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .slider-container {
+            display: grid;
+        }
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+        .slider img {
+            width: 100%;
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .prev { left: 10px; }
+        .next { right: 10px; }
+        .section_2 {
+            background: black;
+            text-align: center;
+            padding: 50px 0;
+        }
+        .section_2 p {
+            font-size: 30px;
+            margin-top: 20px;
+        }
+        .footer {
+            background: #111;
+            color: #ccc;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .footer .socials a {
+            color: #ccc;
+            margin: 0 10px;
+        }
+        .footer .socials a:hover {
+            color: white;
+        }
+        .section_3 {
+            background:#190427;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .section_3 h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .feature {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .feature:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .feature img {
+            width: 180px;
+            margin-bottom: 15px;
+        }
+        .sr-only { position: absolute; left: -9999px; }
+
+        /* === МОДАЛКА ORDER NOW === */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: grid; place-items: center; z-index: 2000; }
+        .modal-overlay.hidden { display: none; }
+        .modal { background: #fff; color: #333; max-width: 520px; width: min(92vw, 520px); padding: 24px; border-radius: 16px; position: relative; }
+        .modal__close { position: absolute; top: 8px; right: 12px; font-size: 24px; border: 0; background: transparent; cursor: pointer; }
+
+        /* === СТИЛИ ДЛЯ СТРАНИЦ РЕГИОНОВ === */
+        .app-page {
+            display: none; /* Все страницы скрыты по умолчанию */
+        }
+        .app-page.active-page {
+            display: block; /* Показываем только активную */
+        }
+
+        /* Общие переменные и стили для внутренних секций регионов */
+        .site-header-region { background-color: #1a1a1a; color: #fff; padding: 15px 0; }
+        .hero-region { position: relative; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 80px 0 40px; }
+        .hero__overlay { position: absolute; inset: 0; background: rgba(26, 26, 26, 0.55); }
+        .hero__inner { position: relative; z-index: 1; }
+        .hero__title { font-size: clamp(38px, 6vw, 72px); margin: 0 0 10px; }
+        .hero__subtitle { font-size: clamp(16px, 2.2vw, 22px); margin-bottom: 20px; }
+        .btn-primary { background-color: #f0c040; color: #1a1a1a; font-weight: bold; }
+        .section-region { padding: 60px 0; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; text-align: left; }
+        .two-col--reverse { grid-template-columns: 1fr 1fr; direction: rtl; }
+        .two-col--reverse .text { direction: ltr; }
+        .section-region .media img { max-width: 500px; width: 100%; height: auto; border-radius: 12px; display: block; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+        .bullets { padding-left: 20px; margin: 14px 0 0; }
+        .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .controls .ctrl { background: #6022aa; border: none; color: #fff; font-size: 22px; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; }
+
+        /* Слайдеры персонажей в регионах */
+        .char-slider { position: relative; min-height: 420px; display: flex; justify-content: center; align-items: center; }
+        .char-card { background: #fff; color: #333; border-radius: 16px; padding: 20px; max-width: 500px; width: 100%; text-align: center; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .char-card.active { display: block; }
+        .char-card img { max-width: 250px; width: 100%; border-radius: 12px; margin-bottom: 10px; object-fit: cover; }
+
+        /* Галереи */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
+        .grid img { width: 100%; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .grid img:hover { transform: scale(1.05); }
+        details { margin: 10px 0; background: #222; color: #fff; padding: 10px 16px; border-radius: 8px; text-align: left; }
+        summary { cursor: pointer; font-weight: bold; }
+        .site-footer-region { background: #111; text-align: center; padding: 20px 0; margin-top: 40px; color: #ccc; }
+        .to-top { display: inline-block; margin-left: 10px; background: #ffd166; color: #111; padding: 5px 10px; border-radius: 5px; }
+
+        /* Лайтбокс */
+        .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; z-index: 3000; }
+        .lightbox.open, .lightbox.active { visibility: visible; opacity: 1; }
+        .lightbox__img { max-width: 90%; max-height: 90%; border-radius: 12px; }
+        .lightbox__close { position: absolute; top: 20px; right: 30px; background: none; border: none; font-size: 36px; color: #fff; cursor: pointer; }
+
+        /* КАСТОМНЫЕ ЦВЕТА РЕГИОНОВ */
+        /* Мондштадт */
+        #mondstadt { background: #f2f7ff; color: #0e1222; }
+        #mondstadt .section-region.alt { background: #ffffff; }
+        #mondstadt .controls .ctrl { background: #2e65a3; }
+        #mondstadt .hero-region { background: url("img3.jpg") center/cover no-repeat; }
+
+        /* Ли Юэ */
+        #liyue { background: #1b3f66; color: #eee; }
+        #liyue .section-region.alt { background: #f0f0f0; color: #333; }
+        #liyue .controls .ctrl { background: #f0c040; color: #1a1a1a; }
+        #liyue .hero-region { background: url('Изображение WhatsApp 2025-08-21 в 13.22.51_c40a9161 — Отредактировано — Отредактировано.jpg') center/cover no-repeat; }
+
+        /* Инадзума */
+        #inazuma { background-color: #0d0d0d; color: #eee; }
+        #inazuma .section-region.alt { background: #181222; }
+        #inazuma .controls .ctrl { background: #6022aa; }
+        #inazuma .hero-region { background: url("maxresdefault (12).jpg") center/cover no-repeat; }
+
+        /* Сумеру */
+        #sumeru { background-color: #0c120a; color: #f0f7f0; }
+        #sumeru .section-region.alt { background: #132012; }
+        #sumeru .controls .ctrl { background: #1e6b3c; }
+        #sumeru .hero-region { background: url("14f6f-16567681037541-1920.jpg") center/cover no-repeat; }
+
+        /* Фонтейн */
+        #fontaine { background-color: #0b1116; color: #e9f7ff; }
+        #fontaine .section-region.alt { background: #111b27; }
+        #fontaine .controls .ctrl { background: #145a9c; }
+        #fontaine .hero-region { background: url("Genshin-Impact-Court-of-Fontaine.webp") center/cover no-repeat; }
+
+        /* Натлан */
+        #natlan { background-color: #1a0f0f; color: #ffefe9; }
+        #natlan .section-region.alt { background: #271411; }
+        #natlan .controls .ctrl { background: #cc441c; }
+        #natlan .hero-region { background: url("3febc-17212083799705-1920.webp") center/cover no-repeat; }
+
+        @media (max-width: 768px) {
+            .two-col, .two-col--reverse { grid-template-columns: 1fr; }
+            .div1 { gap: 15px; flex-wrap: wrap; justify-content: center; padding: 0; }
+            .container { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <img src="../Без%20названия.png" alt="Logo" height="96" width="96">
+        <nav>
+            <ul class="div1">
+                <li><a href="#" class="nav-link active-nav" data-target="home">Home</a></li>
+                <li><a href="#" class="nav-link" data-target="mondstadt">Mondstadt</a></li>
+                <li><a href="#" class="nav-link" data-target="liyue">Liyue</a></li>
+                <li><a href="#" class="nav-link" data-target="inazuma">Inazuma</a></li>
+                <li><a href="#" class="nav-link" data-target="sumeru">Sumeru</a></li>
+                <li><a href="#" class="nav-link" data-target="fontaine">Fontaine</a></li>
+                <li><a href="#" class="nav-link" data-target="natlan">Natlan</a></li>
+            </ul>
+        </nav>
+        <a href="#" class="btn order-now-trigger">ORDER NOW</a>
+    </div>
+</header>
+
+<!-- ================= ГЛАВНАЯ СТРАНИЦА ================= -->
+<div id="home" class="app-page active-page">
+    <main>
+        <section class="welcome">
+            <div class="container">
+                <div class="welcome_text">
+                    <h4 class="welcome_subtitle">GENSHIN IMPACT</h4>
+                    <h1 class="welcome_title">GENSHIN IMPACT</h1>
+                    <p class="welcome_dasc">The game has a plot and an internal game world...</p>
+                    <a href="#" class="btn">DID I DO?</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="food-list">
+            <div class="food-list_card">
+                <img src="maxresdefault.jpg" alt="Furina">
+                <h4 class="food-list_title">FURINA</h4>
+                <p>Former Hydro Archon and actress</p>
+            </div>
+            <div class="food-list_card">
+                <img src="genshin-impact-video-game-wanderer-wallpaper-1920x1080_48.jpg" alt="Wanderer">
+                <h4 class="food-list_title">WANDERER</h4>
+                <p>Former Electro Archon and puppet</p>
+            </div>
+            <div class="food-list_card">
+                <img src="images%20(1).jpg" alt="Arlecchino">
+                <h4 class="food-list_title">ARLECCHINO</h4>
+                <p>4th Fatui Harbinger</p>
+            </div>
+            <div class="food-list_card">
+                <img src="anime-genshin-impact-mavuika-genshin-impact-hd-wallpaper-preview.jpg" alt="Mavuika">
+                <h4 class="food-list_title">MAVUIKA</h4>
+                <p> Pyro Archon</p>
+            </div>
+        </section>
+
+        <section class="slider">
+            <div class="slider-container">
+                <div class="slide active">
+                    <img src="vvarca.png" alt="Slide 1">
+                </div>
+                <div class="slide">
+                    <img src="tort.webp" alt="Slide 2">
+                </div>
+                <div class="slide">
+                    <img src="kinich.jpg" alt="Slide 3">
+                </div>
+                <div class="slide">
+                    <img src="Klorinda-1.webp" alt="Slide 4">
+                </div>
+            </div>
+            <button class="prev">&#10094;</button>
+            <button class="next">&#10095;</button>
+        </section>
+
+        <section class="section_3">
+            <div class="container">
+                <h2>Featured Characters</h2>
+                <div class="features">
+                    <div class="feature">
+                        <img src="img2.jpg" alt="Bennett">
+                        <h3>Bennett</h3>
+                        <p>An optimistic adventurer from Mondstadt, leader of "Benny's Adventure Team".</p>
+                    </div>
+                    <div class="feature">
+                        <img src="ias.webp" alt="Yan San">
+                        <h3>Yan San</h3>
+                        <p>A mysterious character from the new region, known for wisdom and strength.</p>
+                    </div>
+                    <div class="feature">
+                        <img src="img1.jpg" alt="Sy se">
+                        <h3>Chy cha</h3>
+                        <p>A young exorcist from Liyue with a pure heart and cryo vision.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section_2">
+            <div class="container">
+                <img src="27445c5ff57ac5f538ba46eb5985b5a7.jpg" alt="Region Image">
+                <p>There are over a hundred characters and the new region will open soon.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 BEKA. All Rights Reserved.</p>
+            <div class="socials">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">YouTube</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- ================= MONDSTADT ================= -->
+<div id="mondstadt" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Mondstadt</h1>
+                <p class="hero__subtitle">City of Freedom and Wind</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Мондштадт — город свободы, вдохновлённый ветром и музыкой. Его оберегает Архонт Анемо — Барбатос. Здесь ценят путешествия, песни и свободу слова.</p>
+                    <ul class="bullets">
+                        <li>Символ — Ветер</li>
+                        <li>Атмосфера — лёгкость и музыка</li>
+                        <li>Архитектура — европейское средневековье</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="img4.jpg" alt="Вид на Мондштадт"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="img5.jpg" alt="Собор Мондштадта"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>История Мондштадта полна песен и легенд. Бардов можно встретить на каждой площади, а фестивали собирают жителей и гостей города круглый год.</p>
+                    <p>Музыка — сердце Мондштадта: она звучит в тавернах, на площадях и в сердцах путешественников.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Мондштадта</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="vvarca.png" alt="Varca">
+                        <h3>Varca</h3>
+                        <p>Отважный защитник Мондштадта. Символ стойкости и верности ветру.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="img2.jpg" alt="Bennett">
+                        <h3>Bennett</h3>
+                        <p>Вечный оптимист и искатель приключений. Удача? Спорный вопрос!</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="f5b9967b-0541-4bde-9db1-ee762c79e850.jpg" alt="Amber">
+                        <h3>Amber</h3>
+                        <p>Рассекательница ветра и Храбрый Следопыт. Всегда готова помочь.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="img7.jpg" alt="Lisa">
+                        <h3>Lisa</h3>
+                        <p>Эрудированная библиотекарь Ордо Фавониус. Молнии и книги — её стихия.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region alt" id="gallery-mondstadt">
+            <div class="container">
+                <h2>Галерея</h2>
+                <p class="muted">Нажми на изображение, чтобы открыть в большом размере.</p>
+                <div class="grid">
+                    <img src="img8.jpg" alt="Пейзаж Мондштадта" data-full="../img8.jpg">
+                    <img src="img5.jpg" alt="Замок в Мондштадте" data-full="../img5.jpg">
+                    <img src="img9.jpg" alt="площадь" data-full="../img9.jpg">
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Mondstadt</p></div></footer>
+</div>
+
+<!-- ================= LIYUE ================= -->
+<div id="liyue" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Liyue</h1>
+                <p class="hero__subtitle">City of Contracts and Commerce</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Ли Юэ — город торговцев и мастеров. Архонт Гео, Морксин, оберегает его. Здесь ценят богатство, традиции и дисциплину.</p>
+                    <ul class="bullets">
+                        <li>Символ — Камень</li>
+                        <li>Атмосфера — торжественность и порядок</li>
+                        <li>Архитектура — китайский стиль с пагодами</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="../maxresdefault%20(10).jpg" alt="Вид на Ли Юэ"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="genshin-impact-liyue-night-scene-zair5t166j1ut18y.jpg" alt="Пагода Ли Юэ"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>Ли Юэ славится своими фестивалями и контракты, которые соблюдаются до последней буквы.</p>
+                    <p>Торговля и ремесла — сердце Ли Юэ, а мастера и купцы создают неповторимую атмосферу.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Ли Юэ</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="../maxresdefault%20(11).jpg" alt="Ningguang">
+                        <h3>Ningguang</h3>
+                        <p>Влиятельная бизнес-леди Ли Юэ, master контрактов и богатства.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="zhongli.jpg" alt="Zhongli">
+                        <h3>Zhongli</h3>
+                        <p>Бог Гео в человеческом облике, мудрый советник и историк.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="../i%20(8).webp" alt="Xiao">
+                        <h3>Xiao</h3>
+                        <p>Страж Ли Юэ, защищает город от демонов. Одинокий и загадочный.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="hhh.webp" alt="Ganyu">
+                        <h3>Ganyu</h3>
+                        <p>Полубожественная секретарь, предана городу и традициям.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Liyue</p></div></footer>
+</div>
+
+<!-- ================= INAZUMA ================= -->
+<div id="inazuma" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Inazuma</h1>
+                <p class="hero__subtitle">Nation of Eternity and Thunder</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Инадзума — островное государство, скрытое в бурях и молниях. Здесь царит строгий порядок и закон Вечной Архонта — Райдэн Сёгун.</p>
+                    <ul class="bullets">
+                        <li>Символ — Молния</li>
+                        <li>Атмосфера — дисциплина и духовность</li>
+                        <li>Архитектура — японская традиция</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="1d9vC6t6X7I.jpg" alt="Пейзаж Инадзумы"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="../maxresdefault%20(13).jpg" alt="Храм Инадзумы"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>История Инадзумы полна борьбы за вечность и гармонию. Здесь чтят традиции, уважение к предкам и строгую иерархию.</p>
+                    <p>Ритуалы, фестивали и медитации отражают глубокую связь жителей с природой и молнией.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Инадзумы</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="../Изображение%20WhatsApp%202025-08-27%20в%2002.53.43_240ac2a8.jpg" alt="Raiden Shogun">
+                        <h3>Raiden Shogun</h3>
+                        <p>Архонт Электро и правительница Инадзумы. Олицетворение вечности.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="AY.jpg" alt="Ayaka">
+                        <h3>Kamisato Ayaka</h3>
+                        <p>Благородная принцесса клана Камисато, олицетворение грации и чести.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="ITYO.webp" alt="Itto">
+                        <h3>Arataki Itto</h3>
+                        <p>Весёлый и беззаботный онни. Душа компании и источник хаоса.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="YA.jpg" alt="Yoimiya">
+                        <h3>Yoimiya</h3>
+                        <p>Мастер фейерверков, несущая радость и праздник в каждый уголок Инадзумы.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Inazuma</p></div></footer>
+</div>
+
+<!-- ================= SUMERU ================= -->
+<div id="sumeru" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Sumeru</h1>
+                <p class="hero__subtitle">Nation of Wisdom and Knowledge</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Сумеру — страна мудрости и знаний, управляемая Архонтом Дендро — Находной. Здесь соседствуют пышные джунгли и величественные пустыни, а в сердце города стоит Академия Сумеру.</p>
+                    <ul class="bullets">
+                        <li>Символ — Дендро (Природа)</li>
+                        <li>Атмосфера — учёность и магия</li>
+                        <li>Архитектура — восточные и индийские мотивы</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="../i%20(10).webp" alt="Пейзаж Сумеру"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="2cc5b02d910ffce53c584a430a9e6ca8.jpg" alt="Академия Сумеру"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>Сумеру славится как центр науки и магии. Здесь рождаются учёные, философы и маги, а знания ценятся выше всего. Однако строгие правила Академии порой ограничивают свободу мысли.</p>
+                    <p>Культура региона сочетает мудрость древних цивилизаций и красоту природы: мистические джунгли, пустынные оазисы и священные храмы.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Сумеру</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="nn.jpg" alt="Nahida">
+                        <h3>Nahida</h3>
+                        <p>Дендро Архонт, маленькая, но мудрая хранительница знаний.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="tt.jpg" alt="Tighnari">
+                        <h3>Tighnari</h3>
+                        <p>Страж джунглей и мудрый наставник, любящий природу и её гармонию.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="../nilu_prevju%20(1).jpg" alt="Nilou">
+                        <h3>Nilou</h3>
+                        <p>Танцовщица, чьи движения олицетворяют красоту и магию воды.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="as.jpg" alt="Alhaitham">
+                        <h3>Alhaitham</h3>
+                        <p>Умный и рассудительный воин, ценящий логику превыше всего.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Sumeru</p></div></footer>
+</div>
+
+<!-- ================= FONTAINE ================= -->
+<div id="fontaine" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Fontaine</h1>
+                <p class="hero__subtitle">Nation of Justice and Water</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Фонтейн — страна справедливости и технологий, вдохновлённая водой и индустриальной революцией. Здесь царит строгий порядок, суды и законы, а жители известны изобретательностью.</p>
+                    <ul class="bullets">
+                        <li>Символ — Вода</li>
+                        <li>Атмосфера — правосудие и технологии</li>
+                        <li>Архитектура — индустриальная Европа XIX века</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="4bf92f22336f89ccae325c5967d058d3.jpg" alt="Пейзаж Фонтейна"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="4c3a07f9ab1eed106b9993392c5b622a.jpg" alt="Суд Фонтейна"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>Фонтейн славится как центр законов и правосудия. Здесь находится знаменитый Трибунал, а жители ценят справедливость выше всего.</p>
+                    <p>Но за фасадом правосудия скрываются противоречия: прогресс и техника борются с природой, а судьбы людей зависят от строгих законов.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Фонтейна</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="maxresdefault.jpg" alt="Furina">
+                        <h3>Furina</h3>
+                        <p>Гидро Архонт Фонтейна. Харизматичная, но скрывающая свои тайны.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="5d78da61-6c07-4088-babc-a00f9ca4f2b2.webp" alt="Neuvillette">
+                        <h3>Neuvillette</h3>
+                        <p>Главный судья Фонтейна, строгий и справедливый.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="img10.jpg" alt="Lynette">
+                        <h3>Lynette</h3>
+                        <p>Тихая ассистентка в дуэте с братом-иллюзионистом.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="lini.jpg" alt="Lyney">
+                        <h3>Lyney</h3>
+                        <p>Обаяшка-иллюзионист, мастер трюков и театра.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Fontaine</p></div></footer>
+</div>
+
+<!-- ================= NATLAN ================= -->
+<div id="natlan" class="app-page">
+    <main>
+        <section class="hero-region">
+            <div class="hero__inner container">
+                <h1 class="hero__title">Natlan</h1>
+                <p class="hero__subtitle">Nation of Fire and War</p>
+            </div>
+            <div class="hero__overlay"></div>
+        </section>
+
+        <section class="section-region">
+            <div class="container two-col">
+                <div class="text">
+                    <h2>О регионе</h2>
+                    <p>Натлан — земля пламени и страсти. Жители этой страны известны как сильные и свободолюбивые воины, которые чтут огонь как символ силы и духа.</p>
+                    <ul class="bullets">
+                        <li>Символ — Огонь 🔥</li>
+                        <li>Атмосфера — свобода, битвы и ритуалы</li>
+                        <li>Культура — племена и арены</li>
+                    </ul>
+                </div>
+                <div class="media"><img src="01882.-ua8rEj.jpg" alt="Пейзаж Натлана"></div>
+            </div>
+        </section>
+
+        <section class="section-region alt">
+            <div class="container two-col two-col--reverse">
+                <div class="media"><img src="3febc-17212083799705-1920.webp" alt="Арена Натлана"></div>
+                <div class="text">
+                    <h2>История и культура</h2>
+                    <p>Народ Натлана живёт племенами, где каждое гордится своей силой и свободой. Они проводят боевые ритуалы и состязания на аренах, где огонь освещает поле сражений.</p>
+                    <p>Здесь ценится сила, честь и боевой дух. Огонь — это не только разрушение, но и возрождение.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-region">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Персонажи Натлана</h2>
+                    <div class="controls">
+                        <button class="ctrl prev-char">‹</button>
+                        <button class="ctrl next-char">›</button>
+                    </div>
+                </div>
+                <div class="char-slider">
+                    <article class="char-card active">
+                        <img src="anime-genshin-impact-mavuika-genshin-impact-hd-wallpaper-preview.jpg" alt="Mavuika">
+                        <h3>MAVUIKA</h3>
+                        <p>Архонт Пиро, богиня войны.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="ias.webp" alt="Iansan">
+                        <h3>Iansan</h3>
+                        <p>Храбрая воительница племени.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="../Изображение%20WhatsApp%202025-08-27%20в%2003.01.17_ef6040a6.jpg" alt="Ororon">
+                        <h3>Ororon</h3>
+                        <p>Вольный охотник пустошей.</p>
+                    </article>
+                    <article class="char-card">
+                        <img src="../Изображение%20WhatsApp%202025-08-27%20в%2003.01.17_410d37e9.jpg" alt="Mualani">
+                        <h3>MUALANI</h3>
+                        <p>Хранительница огненных вод, мудрая жрица, соединяющая силу пламени и духа природы.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer-region"><div class="container"><p>© 2025 BEKA • Natlan</p></div></footer>
+</div>
+
+
+<!-- ВСПЛЫВАЮЩИЕ ОКНА (ОБЩИЕ) -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox__close" id="lbClose">×</button>
+    <img class="lightbox__img" id="lbImg" src="" alt="Просмотр изображения">
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // === 1. ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ (SPA LOGIC) ===
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.app-page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPageId = link.getAttribute('data-target');
+
+                // Управляем классами страниц
+                pages.forEach(page => {
+                    if(page.id === targetPageId) {
+                        page.classList.add('active-page');
+                    } else {
+                        page.classList.remove('active-page');
+                    }
+                });
+
+                // Управляем активным классом ссылок
+                navLinks.forEach(l => l.classList.remove('active-nav'));
+                link.classList.add('active-nav');
+
+                // Скроллим наверх при переключении
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // === 2. ЭФФЕКТ СЖАТИЯ ШАПКИ ===
+        const header = document.querySelector('.header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('header--shrink');
+            } else {
+                header.classList.remove('header--shrink');
+            }
+        }, { passive: true });
+
+        // === 3. СЛАЙДЕР НА ГЛАВНОЙ СТРАНИЦЕ ===
+        const mainSlider = document.querySelector('.slider');
+        if (mainSlider) {
+            const slides = mainSlider.querySelectorAll('.slide');
+            const nextBtn = mainSlider.querySelector('.next');
+            const prevBtn = mainSlider.querySelector('.prev');
+            let slideIndex = 0;
+
+            function showMainSlide(index) {
+                slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+            }
+
+            nextBtn.addEventListener('click', () => {
+                slideIndex = (slideIndex + 1) % slides.length;
+                showMainSlide(slideIndex);
+            });
+
+            prevBtn.addEventListener('click', () => {
+                slideIndex = (slideIndex - 1 + slides.length) % slides.length;
+                showMainSlide(slideIndex);
+            });
+
+            // Автопрокрутка
+            setInterval(() => {
+                slideIndex = (slideIndex + 1) % slides.length;
+                showMainSlide(slideIndex);
+            }, 5000);
+        }
+
+        // === 4. СЛАЙДЕРЫ ПЕРСОНАЖЕЙ В РЕГИОНАХ ===
+        pages.forEach(page => {
+            if (page.id === 'home') return; // Пропускаем главную
+
+            const prevCharBtn = page.querySelector('.prev-char');
+            const nextCharBtn = page.querySelector('.next-char');
+            const charCards = page.querySelectorAll('.char-card');
+            let charIndex = 0;
+
+            if (prevCharBtn && nextCharBtn && charCards.length > 0) {
+                function showCharCard(index) {
+                    charCards.forEach((card, i) => card.classList.toggle('active', i === index));
+                }
+
+                nextCharBtn.addEventListener('click', () => {
+                    charIndex = (charIndex + 1) % charCards.length;
+                    showCharCard(charIndex);
+                });
+
+                prevCharBtn.addEventListener('click', () => {
+                    charIndex = (charIndex - 1 + charCards.length) % charCards.length;
+                    showCharCard(charIndex);
+                });
+            }
+        });
+
+        // === 5. МОДАЛКА ORDER NOW ===
+        const orderBtn = document.querySelector('.order-now-trigger');
+        if (orderBtn) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay hidden';
+            overlay.innerHTML = `
+        <div class="modal">
+          <button class="modal__close">×</button>
+          <h3>Спасибо за интерес!</h3>
+          <p>Это демо-окно. Здесь может быть форма заказа или подписки.</p>
+          <form novalidate style="display:flex; flex-direction:column; gap:10px;">
+            <input type="email" placeholder="you@example.com" required style="padding:10px; border-radius:5px; border:1px solid #ccc;" />
+            <button type="submit" class="btn" style="width:100%; color:#fff;">Отправить</button>
+          </form>
+        </div>
+      `;
+            document.body.appendChild(overlay);
+
+            orderBtn.addEventListener('click', (e) => { e.preventDefault(); overlay.classList.remove('hidden'); });
+            overlay.querySelector('.modal__close').addEventListener('click', () => overlay.classList.add('hidden'));
+            overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.classList.add('hidden'); });
+            overlay.querySelector('form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                overlay.classList.add('hidden');
+                alert('Заявка отправлена!');
+            });
+        }
+
+        // === 6. ЛАЙТБОКС ГАЛЕРЕИ (ОБЩИЙ) ===
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+        const lbClose = document.getElementById('lbClose');
+
+        document.querySelectorAll('.grid img').forEach(img => {
+            img.addEventListener('click', () => {
+                const src = img.getAttribute('data-full') || img.src;
+                lbImg.src = src;
+                lightbox.classList.add('open');
+            });
+        });
+
+        if (lbClose) lbClose.addEventListener('click', () => lightbox.classList.remove('open'));
+        if (lightbox) lightbox.addEventListener('click', (e) => { if(e.target === lightbox) lightbox.classList.remove('open'); });
+    });
+</script>
+</body>
+</html>

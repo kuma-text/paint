@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Продвинутый графический редактор</title>
+    <!-- Подключаем библиотеку EmailJS для отправки писем без сервера -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #1e1e24;
+            color: #fff;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Боковая панель инструментов */
+        .sidebar {
+            width: 280px;
+            background-color: #2a2a35;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        h3 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #a0a0b0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .tool-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Стили кнопок инструментов */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        button, label.btn-label {
+            background-color: #3a3a4a;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        button:hover, label.btn-label:hover {
+            background-color: #4a4a5a;
+        }
+
+        button.active {
+            background-color: #007bff;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #007bff;
+        }
+
+        /* Управление слоями */
+        .layers-list {
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #333344;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .layer-item.active {
+            border-left: 4px solid #007bff;
+            background: #3d3d55;
+        }
+
+        /* Главная рабочая область */
+        .main-area {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111116;
+        }
+
+        /* Контейнер где слои лежат друг над другом */
+        #canvas-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: transparent;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+
+        /* Прозрачный фон-сетка для нижнего слоя */
+        #canvas-container::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #fff;
+            z-index: 0;
+        }
+
+        .btn-send { background-color: #28a745; }
+        .btn-send:hover { background-color: #218838; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #c82333; }
+
+        /* Модальное окно настроек почты */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a35;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            flex-direction: column;
+            gap: 10px;
+            width: 320px;
+        }
+        .modal input {
+            padding: 8px;
+            background: #1e1e24;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Настройки почты EmailJS -->
+    <div class="modal" id="mailModal">
+        <h3>Настройки EmailJS</h3>
+        <input type="text" id="emService" placeholder="Service ID">
+        <input type="text" id="emTemplate" placeholder="Template ID">
+        <input type="text" id="emUser" placeholder="Public Key / User ID">
+        <input type="email" id="emTarget" placeholder="Кому отправить (Ваш Email)">
+        <button onclick="saveMailSettings()">Сохранить</button>
+    </div>
+
+    <!-- Боковая панель -->
+    <div class="sidebar">
+        <div class="tool-group">
+            <h3>Инструменты</h3>
+            <div class="btn-grid">
+                <button id="tool-pencil" class="active" onclick="setTool('pencil')">✏️ Карандаш</button>
+                <button id="tool-marker" onclick="setTool('marker')">🖍️ Маркер</button>
+                <button id="tool-brush" onclick="setTool('brush')">🖌️ Кисть</button>
+                <button id="tool-eraser" onclick="setTool('eraser')">🧽 Стерка</button>
+            </div>
+        </div>
+
+        <div class="tool-group">
+            <h3>Цвет и размер</h3>
+            <input type="color" id="colorPicker" value="#000000">
+            <label>Толщина: <span id="sizeVal">5</span>px</label>
+            <input type="range" id="lineWidth" min="1" max="50" value="5">
+        </div>
+
+        <div class="tool-group">
+            <h3>Слои</h3>
+            <div class="layers-list" id="layersContainer">
+                <!-- Слои будут создаваться тут через JS -->
+            </div>
+            <button onclick="addLayer()">➕ Добавить слой</button>
+        </div>
+
+        <div class="tool-group" style="margin-top: auto;">
+            <button class="btn-danger" onclick="clearCurrentLayer()">Очистить слой</button>
+            <button onclick="document.getElementById('mailModal').style.display='flex'">⚙️ Настройки почты</button>
+            <button class="btn-send" onclick="sendToEmail()">📧 Отправить на почту</button>
+        </div>
+    </div>
+
+    <!-- Рабочая область -->
+    <div class="main-area">
+        <div id="canvas-container">
+            <!-- Сюда JS будет вставлять холсты слоев -->
+        </div>
+    </div>
+
+    <script>
+        // --- ПЕРЕМЕННЫЕ И НАСТРОЙКИ ---
+        const container = document.getElementById('canvas-container');
+        const layersContainer = document.getElementById('layersContainer');
+        const colorPicker = document.getElementById('colorPicker');
+        const lineWidthInput = document.getElementById('lineWidth');
+        const sizeVal = document.getElementById('sizeVal');
+
+        let layers = []; // Массив для хранения объектов слоев
+        let activeLayerIndex = 0;
+        let isDrawing = false;
+        let currentTool = 'pencil'; // pencil, marker, brush, eraser
+        let lastX = 0, lastY = 0;
+
+        // Инициализация при старте
+        window.onload = () => {
+            addLayer(); // Создаем первый слой
+            loadMailSettings();
+        };
+
+        // --- УПРАВЛЕНИЕ СЛОЯМИ ---
+        function addLayer() {
+            const index = layers.length;
+            
+            // Создаем HTML элемент Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            canvas.style.zIndex = index + 1; // Чем выше индекс, тем выше слой визуально
+            container.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            
+            layers.push({ canvas, ctx, name: `Слой ${index + 1}` });
+            
+            // Вешаем обработчики мыши на каждый новый холст
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            selectLayer(index);
+            updateLayersUI();
+        }
+
+        function selectLayer(index) {
+            activeLayerIndex = index;
+            // Отключаем клики на всех слоях, кроме активного, чтобы рисовать именно на нем
+            layers.forEach((layer, i) => {
+                layer.canvas.style.pointerEvents = (i === index) ? 'auto' : 'none';
+            });
+            updateLayersUI();
+        }
+
+        function updateLayersUI() {
+            layersContainer.innerHTML = '';
+            // Рендерим список слоев сверху вниз (последний созданный — сверху списка)
+            for (let i = layers.length - 1; i >= 0; i--) {
+                const item = document.createElement('div');
+                item.className = `layer-item ${i === activeLayerIndex ? 'active' : ''}`;
+                item.innerHTML = `<span>🎨 ${layers[i].name}</span>`;
+                item.onclick = () => selectLayer(i);
+                layersContainer.appendChild(item);
+            }
+        }
+
+        function clearCurrentLayer() {
+            const activeLayer = layers[activeLayerIndex];
+            activeLayer.ctx.clearRect(0, 0, activeLayer.canvas.width, activeLayer.canvas.height);
+        }
+
+        // --- ЛОГИКА РИСОВАНИЯ И ИНСТРУМЕНТОВ ---
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.btn-grid button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tool-${tool}`).classList.add('active');
+        }
+
+        lineWidthInput.addEventListener('input', (e) => {
+            sizeVal.textContent = e.target.value;
+        });
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = layers[activeLayerIndex].canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            const activeLayer = layers[activeLayerIndex];
+            const ctx = activeLayer.ctx;
+            const rect = activeLayer.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+
+            // Настройка стилей в зависимости от выбранного инструмента
+            ctx.globalCompositeOperation = 'source-over'; // Сброс режима стирания
+
+            if (currentTool === 'pencil') {
+                ctx.strokeStyle = colorPicker.value;
+                ctx.lineWidth = lineWidthInput.value;
+                ctx.lineCap = 'butt'; 
+                ctx.globalAlpha = 1.0;
+            } 
+            else if (currentTool === 'marker') {
+                ctx.strokeStyle = colorPicker.value;
+                ctx.lineWidth = parseInt(lineWidthInput.value) + 10; // Маркер чуть толще
+                ctx.lineCap = 'square';
+                ctx.globalAlpha = 0.3; // Полупрозрачность для эффекта маркера
+            } 
+            else if (currentTool === 'brush') {
+                ctx.strokeStyle = colorPicker.value;
+                ctx.lineWidth = lineWidthInput.value;
+                ctx.lineCap = 'round'; // Мягкие круглые края
+                ctx.lineJoin = 'round';
+                ctx.globalAlpha = 1.0;
+            } 
+            else if (currentTool === 'eraser') {
+                // Режим ластика — стирает пиксели именно на текущем слое
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = lineWidthInput.value;
+                ctx.lineCap = 'round';
+            }
+
+            ctx.stroke();
+            lastX = x;
+            lastY = y;
+        }
+
+        // --- СОХРАНЕНИЕ И ОТПРАВКА НА ПОЧТУ ---
+        function saveMailSettings() {
+            localStorage.setItem('em_service', document.getElementById('emService').value);
+            localStorage.setItem('em_template', document.getElementById('emTemplate').value);
+            localStorage.setItem('em_user', document.getElementById('emUser').value);
+            localStorage.setItem('em_target', document.getElementById('emTarget').value);
+            document.getElementById('mailModal').style.display = 'none';
+            alert('Настройки сохранены!');
+            loadMailSettings();
+        }
+
+        function loadMailSettings() {
+            document.getElementById('emService').value = localStorage.getItem('em_service') || '';
+            document.getElementById('emTemplate').value = localStorage.getItem('em_template') || '';
+            document.getElementById('emUser').value = localStorage.getItem('em_user') || '';
+            document.getElementById('emTarget').value = localStorage.getItem('em_target') || '';
+            
+            const pKey = localStorage.getItem('em_user');
+            if(pKey) emailjs.init(pKey);
+        }
+
+        function sendToEmail() {
+            const serviceId = localStorage.getItem('em_service');
+            const templateId = localStorage.getItem('em_template');
+            const targetEmail = localStorage.getItem('em_target');
+
+            if (!serviceId || !templateId || !targetEmail) {
+                alert('Сначала заполните "Настройки почты"!');
+                document.getElementById('mailModal').style.display = 'flex';
+                return;
+            }
+
+            // Создаем временный невидимый холст, чтобы склеить все слои в одну картинку
+            const mergeCanvas = document.createElement('canvas');
+            mergeCanvas.width = 800;
+            mergeCanvas.height = 600;
+            const mCtx = mergeCanvas.getContext('2d');
+
+            // Заливаем белым фоном, чтобы картинка не была прозрачной в письме
+            mCtx.fillStyle = '#ffffff';
+            mCtx.fillRect(0, 0, 800, 600);
+
+            // Поочередно накладываем слои снизу вверх
+            layers.forEach(layer => {
+                mCtx.drawImage(layer.canvas, 0, 0);
+            });
+
+            // Превращаем холст в строку картинки (Base64 DataURL)
+            const dataURL = mergeCanvas.toDataURL('image/jpeg', 0.8);
+
+            alert('Отправка началась... Пожалуйста, подождите.');
+
+            // Отправляем через EmailJS
+            emailjs.send(serviceId, templateId, {
+                to_email: targetEmail,
+                my_image: dataURL // Передаем картинку в шаблон
+            })
+            .then(() => {
+                alert('Ура! Рисунок успешно отправлен вам на почту.');
+            })
+            .catch((error) => {
+                alert('Ошибка отправки: ' + JSON.stringify(error));
+            });
+        }
+    </script>
+</body>
+</html>
