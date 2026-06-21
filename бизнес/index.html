@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PRO_BIZ - Ваш бизнес будущего. Сайты, AI решения, маркетинг.">
+  <title>PRO_BIZ v3.0 | Premium</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- Глобальные UI элементы -->
+<div id="progressBar"></div>
+<div class="cursor"></div>
+
+<div id="loader">
+  <h1>PRO_BIZ</h1>
+</div>
+<div id="particles" aria-hidden="true"></div>
+
+<!-- Объединенная Шапка -->
+<header>
+  <div class="logo">PRO_BIZ</div>
+  <nav>
+    <a href="index.html#home">Главная</a>
+    <a href="services.html">Услуги</a>
+    <a href="portfolio.html">Портфолио</a>
+    <a href="team.html">Команда</a>
+    <a href="index.html#faq">FAQ</a>
+    <a href="index.html#contact">Контакты</a>
+  </nav>
+  <button id="themeBtn" aria-label="Переключить темную тему">🌙</button>
+</header>
+
+<main>
+  <!-- Главный экран -->
+  <section class="hero" id="home">
+    <h1>Ваш бизнес будущего</h1>
+    <p>Создаем сайты, автоматизацию, AI решения, маркетинг и цифровые продукты нового поколения.</p>
+    <div class="hero-buttons">
+      <button class="primary">Начать сейчас</button>
+      <button class="secondary">Подробнее</button>
+    </div>
+  </section>
+
+  <!-- Статистика -->
+  <section class="stats" aria-label="Статистика компании">
+    <div class="stat">
+      <h2 id="n1">500</h2>
+      <p>Проектов</p>
+    </div>
+    <div class="stat">
+      <h2 id="n2">240</h2>
+      <p>Клиентов</p>
+    </div>
+    <div class="stat">
+      <h2 id="n3">350</h2>
+      <p>Рост прибыли</p>
+    </div>
+    <div class="stat">
+      <h2 id="n4">27</h2>
+      <p>Стран</p>
+    </div>
+  </section>
+
+  <!-- Услуги (Краткое превью) -->
+  <section id="services">
+    <h2 class="title">Наши услуги</h2>
+    <div class="cards">
+      <article class="card">
+        <h3>🤖 AI Автоматизация</h3>
+        <p>Внедрение искусственного интеллекта для оптимизации рутины.</p>
+      </article>
+      <article class="card">
+        <h3>🌐 Веб-разработка</h3>
+        <p>Современные высокоскоростные сайты и платформы.</p>
+      </article>
+      <article class="card">
+        <h3>📈 Маркетинг</h3>
+        <p>Комплексное продвижение твоего бизнеса в интернете.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Портфолио (Краткое превью) -->
+  <section id="portfolio">
+    <h2 class="title">Портфолио</h2>
+    <div class="cards">
+      <article class="project">
+        <h3>CRM система</h3>
+        <p>Полная автоматизация отделов продаж.</p>
+      </article>
+      <article class="project">
+        <h3>Интернет-магазин</h3>
+        <p>Масштабный e-commerce с ростом прибыли на 300%.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Команда (Краткое превью) -->
+  <section id="team">
+    <h2 class="title">Команда</h2>
+    <div class="cards">
+      <article class="card">
+        <h3>CEO</h3>
+        <p>Стратегическое управление и масштабирование компании.</p>
+      </article>
+      <article class="card">
+        <h3>Lead Developer</h3>
+        <p>Архитектура сложных систем и контроль разработки.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Интерактивный FAQ -->
+  <section id="faq">
+    <h2 class="title">FAQ</h2>
+    <div class="faq-container">
+      <details class="faq-item">
+        <summary>Сколько стоит сайт?</summary>
+        <p>Цена рассчитывается индивидуально под проект, стартует от 300$.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Сколько времени занимает разработка?</summary>
+        <p>Простые решения запускаем от 7 дней. Сложные платформы — от месяца.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Есть ли техническая поддержка?</summary>
+        <p>Да, мы обеспечиваем полное сопровождение и поддержку сайтов 24/7.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Отзывы клиентов -->
+  <section id="reviews">
+    <h2 class="title">Отзывы клиентов</h2>
+    <div class="review-slider">
+      <article class="review active">
+        <div class="stars" aria-label="5 звезд">⭐⭐⭐⭐⭐</div>
+        <p>Отличная работа. Прибыль выросла на 280%.</p>
+        <b>Алексей</b>
+      </article>
+      <article class="review">
+        <div class="stars" aria-label="5 звезд">⭐⭐⭐⭐⭐</div>
+        <p>Сайт окупился за первый месяц. Команда топ!</p>
+        <b>Игорь</b>
+      </article>
+    </div>
+  </section>
+
+  <!-- Форма обратной связи -->
+  <section id="contact">
+    <h2 class="title">Оставить заявку</h2>
+    <form id="contactForm" action="#" method="POST">
+      <input type="text" name="user_name" placeholder="Имя" required>
+      <input type="email" name="user_email" placeholder="Email" required>
+      <textarea name="user_message" placeholder="Сообщение" required></textarea>
+      <button type="submit" class="primary">Отправить</button>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 PRO_BIZ PREMIUM</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
