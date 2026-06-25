@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Moon in the Galaxy</title>
+  <style>
+    /* ==========================================================================
+       ШПОРА: ГЛУБОКИЙ КОСМИЧЕСКИЙ ФОН СО ЗВЕЗДАМИ И ТУМАННОСТЯМИ
+       ========================================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      overflow: hidden;
+      background: #020005;
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1200px;
+    }
+
+    /* Настоящий многослойный космос на бэкграунде */
+    .space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background:
+              radial-gradient(circle at 50% 50%, rgba(125, 95, 255, 0.15), transparent 60%),
+              radial-gradient(circle at 20% 80%, rgba(255, 102, 204, 0.15), transparent 50%),
+              #030108;
+      z-index: 1;
+    }
+    /* Слой с мелкими мерцающими звездами */
+    .stars {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image:
+              radial-gradient(white, rgba(255,255,255,.3) 1px, transparent 30px),
+              radial-gradient(rgba(255,255,255,0.8), rgba(255,255,255,.1) 1.5px, transparent 40px);
+      background-size: 400px 400px, 250px 250px;
+      animation: spaceRotate 60s linear infinite;
+      z-index: 2;
+      opacity: 0.6;
+    }
+
+    @keyframes spaceRotate {
+      from { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(5deg) scale(1.05); }
+      to { transform: rotate(0deg) scale(1); }
+    }
+
+    /* ==========================================================================
+       ШПОРА: ЛЕТАЮЩИЕ ПЛАНЕТЫ, ЗАКАТЫ И ЭМОЦИИ ВОКРУГ ЛУНЫ
+       ========================================================================== */
+    .multiverse-object {
+      position: absolute;
+      z-index: 5; /* Летают строго за Луной, но перед звездами */
+      pointer-events: none;
+      user-select: none;
+      animation: orbitFly 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes orbitFly {
+      0% {
+        opacity: 0;
+        transform: translate(var(--startX), var(--startY)) scale(0.1) rotate(0deg);
+        filter: blur(8px) drop-shadow(0 0 10px var(--glowColor));
+      }
+      20% { opacity: 1; filter: blur(0) drop-shadow(0 0 20px var(--glowColor)); }
+      50% {
+        /* Пролет прямо рядом с Луной с увеличением */
+        transform: translate(var(--midX), var(--midY)) scale(1.4) rotate(20deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--endX), var(--endY)) scale(0.1) rotate(180deg);
+      }
+    }
+
+    /* ==========================================================================
+       ШПОРА: ЦЕНТРАЛЬНЫЙ БЛОК — СВЕТЯЩАЯСЯ ЛУНА С ФОТОГРАФИЕЙ
+       ========================================================================== */
+    .overlay {
+      position: relative;
+      text-align: center;
+      z-index: 20;
+      transition: all 1s ease;
+    }
+    .hide { display: none !important; }
+
+    .overlay h1 {
+      font-size: 4rem;
+      text-shadow: 0 0 20px #ff66cc, 0 0 50px #7d5fff;
+    }
+
+    #startBtn {
+      margin-top: 40px;
+      padding: 18px 60px;
+      border: none;
+      border-radius: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(45deg, #ff66cc, #7d5fff, #ff66cc);
+      color: white;
+      box-shadow: 0 10px 30px rgba(255, 102, 204, 0.4);
+      transition: 0.3s;
+    }
+    #startBtn:hover { transform: scale(1.1); box-shadow: 0 15px 40px #ff66cc; }
+
+    /* Контейнер шоу */
+    .content-box {
+      display: none;
+      text-align: center;
+      z-index: 10; /* Окна с текстом выше всего */
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    /* ФОТО-ЛУНА: Идеально круглая с мощным лунным свечением */
+    .moon-wrapper {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto 35px auto;
+      border-radius: 50%; /* Превращаем в круглую Луну */
+      overflow: hidden;
+      /* Лунное неоновое свечение (Мягкий белый + фиолетовый космос) */
+      box-shadow:
+              0 0 30px rgba(255, 255, 255, 0.6),
+              0 0 60px rgba(125, 95, 255, 0.4),
+              inset 0 0 40px rgba(0,0,0,0.8); /* Внутренняя тень для объема сферы */
+      border: 4px solid rgba(255, 255, 255, 0.4);
+      background: #000;
+      z-index: 15; /* Перед летающими фонами */
+    }
+    .moon-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .content-box h2 {
+      font-size: 2.3rem;
+      font-weight: bold;
+      min-height: 110px;
+      text-shadow: 0 0 25px rgba(255,102,204,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Анимации "Дыхания Луны" */
+    .anim-moon-pulse { animation: moonPulse 4.2s ease-in-out infinite; }
+    @keyframes moonPulse {
+      0% { opacity: 0; transform: scale(0.7) rotate(-5deg); filter: brightness(0.5); }
+      20%, 80% { opacity: 1; transform: scale(1) rotate(0deg); filter: brightness(1.1); }
+      100% { opacity: 0; transform: scale(1.05) rotate(5deg); filter: brightness(0.5); }
+    }
+
+    .anim-moon-flip { animation: moonFlip 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+    @keyframes moonFlip {
+      0% { opacity: 0; transform: rotateY(90deg) scale(0.8); }
+      20%, 80% { opacity: 1; transform: rotateY(0deg) scale(1); }
+      100% { opacity: 0; transform: rotateY(-90deg) scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="space-bg"></div>
+<div class="stars"></div>
+
+<div class="overlay" id="welcomeScreen">
+  <h1>С Днём Рождения ❤️</h1>
+  <p style="opacity: 0.8; font-size: 1.3rem; margin-top: 10px;">Включи звук. Твоя Луна ждет в центре вселенной...</p>
+  <button id="startBtn">Запустить космос</button>
+</div>
+
+<div class="content-box" id="mainContent">
+  <div class="moon-wrapper" id="moonBlock">
+    <img id="personPhoto" src="photo1.jpg" alt="Луна">
+  </div>
+  <h2 id="wishText" class="anim-moon-pulse">Поехали... 🚀</h2>
+</div>
+
+<audio id="music" loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const startBtn = document.getElementById('startBtn');
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const mainContent = document.getElementById('mainContent');
+  const wishText = document.getElementById('wishText');
+  const moonBlock = document.getElementById('moonBlock');
+  const personPhoto = document.getElementById('personPhoto');
+  const music = document.getElementById('music');
+
+  // 24 неповторяющиеся строки поздравления
+  const wishes = [
+    "Ловлю твою улыбку... Она прекрасна! ✨",
+    "Ты заряжаешь этим светом всё вокруг 🌌",
+    "Вспомни этот момент... Было круто! 📸",
+    "Твои глаза светятся истинной радостью 😊",
+    "Пусть музыка твоей души никогда не утихает 🎵",
+    "Рядом с тобой всегда тепло и уютно ❤️",
+    "Желаю бесконечного кайфа от жизни! 🚀",
+    "Ты — человек, который создает атмосферу 🌟",
+    "Пусть каждый день дарит повод посмеяться ☀️",
+    "Самые яркие моменты еще впереди, поверь 💎",
+    "Оставайся всегда таким же невероятным человеком 🔥",
+    "Улыбайся чаще, тебе это очень идет! 🎉",
+    "Пусть в твоем сердце всегда живет весна 🌸",
+    "Каждая минута с тобой — это праздник 🎁",
+    "Иди вперед и никогда не сомневайся в себе 💪",
+    "Желаю верных друзей и космических успехов 🌌",
+    "Пусть в жизни будет больше крутых путешествий ✈️",
+    "Ты заслуживаешь всего самого лучшего в мире 🌍",
+    "Пусть удача сама бегает за тобой по пятам 🍀",
+    "Каждое фото хранит потрясающую историю 📖",
+    "Свети ярко, как самая заветная звезда 💫",
+    "Здоровья, вдохновения и безумной любви! 🥰",
+    "Пусть гармония и уют наполняют твой дом 🏡",
+    "С Днём Рождения! Спасибо за твою улыбку! 🎂"
+  ];
+
+  // Массив твоих 15 фотографий (идут по кругу)
+  const photos = [
+    "photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg", "photo5.jpg",
+    "photo6.jpg", "photo7.jpg", "photo8.jpg", "photo9.jpg", "photo10.jpg",
+    "photo11.jpg", "photo12.jpg", "photo13.jpg", "photo14.jpg", "photo15.jpg"
+  ];
+
+  // ШПОРА: Разнообразные бэкграунды, эмоции и планеты, летящие вокруг Луны
+  const spaceObjects = [
+    { html: '<span style="font-size:5rem;">🪐</span>', color: '#7d5fff' }, // Сатурн
+    { html: '<span style="font-size:4rem;">💥</span>', color: '#ff66cc' }, // Взрыв эмоций / Сверхновая
+    { html: '<span style="font-size:5rem;">🌅</span>', color: '#ff9f43' }, // Закат солнца
+    { html: '<span style="font-size:4rem;">❤️</span>', color: '#ff4757' }, // Любовь/Эмоция
+    { html: '<span style="font-size:5rem;">🌍</span>', color: '#2ed573' }, // Земля
+    { html: '<span style="font-size:4rem;">🔥</span>', color: '#ffa502' }, // Драйв/Огонь
+    { html: '<span style="font-size:5rem;">🌌</span>', color: '#7d5fff' }, // Далекая галактика
+    { html: '<span style="font-size:4rem;">👽</span>', color: '#2ed573' }, // Инопланетный гость
+    { html: '<span style="font-size:6rem;">☀️</span>', color: '#ffa502' }, // Солнце во всей красе
+    { html: '<span style="font-size:4rem;">✨</span>', color: '#ffffff' }  // Сияние звезд
+  ];
+
+  const moonAnims = ["anim-moon-pulse", "anim-moon-flip"];
+  let textIdx = 0;
+  let photoIdx = 0;
+
+  startBtn.addEventListener('click', () => {
+    music.play().catch(() => console.log("Музыка запустится, когда закинешь song.mp3"));
+    welcomeScreen.classList.add('hide');
+
+    setTimeout(() => {
+      welcomeScreen.style.display = 'none';
+      mainContent.style.display = 'block';
+      runShow();
+
+      // Рождение космических объектов и эмоций каждые 1.2 секунды
+      setInterval(spawnSpaceObject, 1200);
+    }, 1000);
+  });
+
+  function runShow() {
+    updateSlide();
+    setInterval(() => {
+      textIdx = (textIdx + 1) % wishes.length;
+      photoIdx = (photoIdx + 1) % photos.length;
+      updateSlide();
+    }, 4200);
+  }
+
+  function updateSlide() {
+    moonBlock.className = "moon-wrapper";
+    wishText.className = "";
+    const randomAnim = moonAnims[Math.floor(Math.random() * moonAnims.length)];
+    void moonBlock.offsetWidth;
+
+    personPhoto.src = photos[photoIdx];
+    wishText.textContent = wishes[textIdx];
+
+    moonBlock.classList.add(randomAnim);
+    wishText.classList.add(randomAnim);
+  }
+
+  // ШПОРА: ГЕНЕРАТОР ОБЪЕКТОВ, ОГИБАЮЩИХ ЛУНУ ПО ОРБИТЕ
+  function spawnSpaceObject() {
+    const obj = document.createElement('div');
+    obj.className = 'multiverse-object';
+
+    const randomData = spaceObjects[Math.floor(Math.random() * spaceObjects.length)];
+    obj.innerHTML = randomData.html;
+    obj.style.setProperty('--glowColor', randomData.color);
+
+    // Траектории полета: Вылетают из случайных мест сзади Луны
+    const sX = (Math.random() * 160 - 80) + 'vw';
+    const sY = (Math.random() * 160 - 80) + 'vh';
+
+    // Точки пересечения по центру (возле Луны)
+    const mX = (Math.random() * 40 - 20) + 'vw';
+    const mY = (Math.random() * 40 - 20) + 'vh';
+
+    // Куда улетают
+    const eX = (Math.random() * 200 - 100) + 'vw';
+    const eY = (Math.random() * 200 - 100) + 'vh';
+
+    obj.style.setProperty('--startX', sX);
+    obj.style.setProperty('--startY', sY);
+    obj.style.setProperty('--midX', mX);
+    obj.style.setProperty('--midY', mY);
+    obj.style.setProperty('--endX', eX);
+    obj.style.setProperty('--endY', eY);
+
+    obj.style.left = '50%';
+    obj.style.top = '40%';
+
+    document.body.appendChild(obj);
+
+    setTimeout(() => { obj.remove(); }, 7000);
+  }
+</script>
+
+</body>
+</html>
